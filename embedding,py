@@ -1,0 +1,32 @@
+import json
+import pickle
+import numpy as np
+import faiss
+
+from sentence_transformers import SentenceTransformer
+
+#Load chunks
+with open("chunks.json", "r", encoding="utf-8") as f:
+    chunks = json.load(f)
+    
+## Load embedding model
+model = SentenceTransformer(
+    "sentence-transformers/all-MiniLM-L6-v2"
+)
+
+#Creating VEctor
+texts= [chunk["text"] for chunk in chunks]
+embeddings = model.encode(texts, show_progress_bar=True)
+print(embeddings.shape) # (diimension,vetor)
+
+# Saving embedding
+with open("embeddings.pkl", "wb") as f:
+    pickle.dump(embeddings, f)
+    
+#Faiss
+dimension=embeddings.shape[1]
+index=faiss.IndexFlatL2(dimension)
+index.add(np.array(embeddings).astype("float32"))
+
+#save
+faiss.write_index(index, "website_index")
