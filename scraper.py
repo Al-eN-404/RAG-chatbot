@@ -14,7 +14,7 @@ def get_internal_links(base_url, links):
 
     return list(set(internal))
 
-def crawl_website(start_url,maxpages=200):
+def crawl_website(start_url,maxpages=10):
     
     pages=[]
     
@@ -58,16 +58,3 @@ def crawl_website(start_url,maxpages=200):
         
         browser.close()
     return pages
-
-
-if __name__=="__main__":
-    pages=crawl_website("https://en.wikipedia.org/wiki/Transport",maxpages=5)
-    
-    print(f"Scraped {len(pages)} pages.")
-    
-    for page in pages:
-        print(f"\nURL: {page['url']}\n")
-        print(f"Content:\n{page['text'][:500]}...\n")
-        
-        print("\nText:")
-        print(page['text'][:300])
