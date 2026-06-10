@@ -1,0 +1,9 @@
+streamlit>=1.30.0
+playwright>=1.40.0
+langchain-text-splitters>=0.0.1
+sentence-transformers>=2.5.0
+weaviate-client>=4.5.0
+langchain-openai>=0.1.0
+python-dotenv>=1.0.0
+torch>=2.0.0
+torchvision>=0.15.0
