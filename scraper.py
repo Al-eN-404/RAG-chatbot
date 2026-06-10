@@ -187,8 +187,4 @@ if __name__ == "__main__":
     
     print(f"\nScraped {len(scraped_pages)} pages in {end_time - start_time:.2f} seconds.")
     for idx, pg in enumerate(scraped_pages):
-        print(f"[{idx+1}] {pg['url']} - {len(pg['text'])} chars")import asyncio
-
-    
-        
-        #updated final version 
+        print(f"[{idx+1}] {pg['url']} - {len(pg['text'])} chars")
