@@ -1,32 +1,60 @@
-import json
-import faiss
-import numpy as np
+import os
 from sentence_transformers import SentenceTransformer
+from vectorstore import get_weaviate_client
 
+# Keep model cached in memory globally to speed up subsequent queries
+_model = None
 
-with open("chunks.json", "r", encoding="utf-8") as f:
-    chunks = json.load(f)
-index = faiss.read_index("website.index")
-
-model = SentenceTransformer(
-    "sentence-transformers/all-MiniLM-L6-v2")
+def get_embedding_model():
+    global _model
+    if _model is None:
+        _model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+    return _model
 
 def retrieve(query, k=3):
-    query_embedding = model.encode([query])
-    distances, indices = index.search(np.array(query_embedding).astype("float32"), k)
-    results = []
-    for idx in indices[0]:
-        results.append(chunks[idx])
-    return results
-
-query = "What is transport?"
-
-results = retrieve(query)
-
-for i, chunk in enumerate(results):
-
-    print(f"\nResult {i+1}")
+    """
+    Search the Weaviate database using hybrid search (BM25 + Semantic).
+    """
+    model = get_embedding_model()
+    # Compute query vector locally
+    query_vector = model.encode([query])[0].tolist()
     
-    print(chunk["url"])
+    retrieved_chunks = []
+    
+    with get_weaviate_client() as client:
+        collection_name = "WebsiteData"
+        
+        # Check if collection exists before querying
+        if not client.collections.exists(collection_name):
+            print(f"Collection '{collection_name}' does not exist.")
+            return retrieved_chunks
+            
+        collection = client.collections.get(collection_name)
+        
+        # Perform hybrid search
+        response = collection.query.hybrid(
+            query=query,
+            vector=query_vector,
+            alpha=0.5,  # Balanced hybrid search weighting
+            limit=k
+        )
+        
+        for obj in response.objects:
+            retrieved_chunks.append({
+                "url": obj.properties.get("url", ""),
+                "text": obj.properties.get("text", "")
+            })
+            
+    return retrieved_chunks
 
-    print(chunk["text"][:300])
+if __name__ == "__main__":
+    # Test retriever
+    query = "What is transport?"
+    results = retrieve(query)
+    for i, chunk in enumerate(results):
+        print(f"\nResult {i+1}")
+        print(chunk["url"])
+        print(chunk["text"][:300])
+
+        
+# updated final version 
