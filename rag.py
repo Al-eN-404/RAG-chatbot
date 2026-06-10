@@ -3,14 +3,37 @@ from dotenv import load_dotenv
 from retriever import retrieve
 
 import os
+# import content
 
 load_dotenv()
 
+def get_api_key():
+    # Try multiple standard keys from streamlit secrets or env variables
+    keys = ["API-KEY", "GROQ_API_KEY", "API_KEY", "OPENAI_API_KEY"]
+    
+    # 1. Try Streamlit Secrets (for Streamlit Cloud deployment)
+    try:
+        import streamlit as st
+        for key in keys:
+            if key in st.secrets:
+                return st.secrets[key]
+    except Exception:
+        pass
+        
+    # 2. Try environment variables (for local deployment / env files)
+    for key in keys:
+        val = os.getenv(key)
+        if val:
+            return val
+            
+    return None
+
 llm = ChatOpenAI(
     model="llama-3.3-70b-versatile",
-    api_key=os.getenv("API-KEY"),
+    api_key=get_api_key(),
     base_url="https://api.groq.com/openai/v1"
 )
+
 
 
 def ask_rag(question):
@@ -44,44 +67,5 @@ def ask_rag(question):
         "sources": sources
     }
 
-from langchain_openai import ChatOpenAI
-from dotenv import load_dotenv
-from retriever import retrieve
-
-import os
-
-load_dotenv()
-
-llm = ChatOpenAI(
-    model="llama-3.3-70b-versatile",
-    api_key=os.getenv("API-KEY"),
-    base_url="https://api.groq.com/openai/v1"
-)
-
-question = "What is transport?"
-
-while True:
-
-    question = input("\nAsk: ")
-
-    if question.lower() == "exit":
-        break
-retrieved_chunks = retrieve(question)
-
-content = "\n\n".join([chunk["text"] for chunk in retrieved_chunks])
-
-prompt = f"""You are a helpful assistant.
-
-Answer ONLY using the provided context.
-
-Context:
-{content}
-
-Question:
-{question}
-"""
-
-response = llm.invoke(prompt)
-print(response.content)
-
-# updated final version
+# updated final version..
+    
