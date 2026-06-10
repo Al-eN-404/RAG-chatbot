@@ -1,59 +1,38 @@
 import os
 import weaviate
 import weaviate.classes as wvc
-from urllib.parse import urlparse
 from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
 
 load_dotenv()
+
+def get_secret(key_name, default=None):
+    try:
+        import streamlit as st
+        if key_name in st.secrets:
+            return st.secrets[key_name]
+    except Exception:
+        pass
+    return os.getenv(key_name, default)
 
 def get_weaviate_client():
     """
     Establish a connection to the Weaviate v4 instance.
     Supports local Docker setup or Weaviate Cloud (WCD) cluster configuration.
     """
-    url = os.getenv("WEAVIATE_URL", "http://localhost:8080").strip()
-    api_key = os.getenv("WEAVIATE_API_KEY")
+    url = get_secret("WEAVIATE_URL", "http://localhost:8080").strip()
+    api_key = get_secret("WEAVIATE_API_KEY")
     
     # Auto-prepend scheme if missing
     if not url.startswith("http://") and not url.startswith("https://"):
-        if "localhost" in url or "127.0.0.1" in url:
-            url = "http://" + url
-        else:
-            url = "https://" + url
+        url = "https://" + url
             
-    parsed = urlparse(url)
-    host = parsed.hostname or "localhost"
-    port = parsed.port or 8080
-    
-    # Check if the endpoint points to Weaviate Cloud (WCD)
-    is_cloud = host.endswith(".weaviate.network") or host.endswith(".weaviate.cloud")
     auth = wvc.init.Auth.api_key(api_key) if api_key else None
     
-    if is_cloud:
-        return weaviate.connect_to_weaviate_cloud(
-            cluster_url=url,
-            auth_credentials=auth
-        )
-    else:
-        # Default to local or custom url
-        if host in ("localhost", "127.0.0.1"):
-            return weaviate.connect_to_local(
-                host=host,
-                port=port,
-                grpc_port=50051,
-                auth_credentials=auth
-            )
-        else:
-            return weaviate.connect_to_custom(
-                http_host=host,
-                http_port=port,
-                grpc_host=host,
-                grpc_port=50051,
-                http_secure=parsed.scheme == "https",
-                grpc_secure=parsed.scheme == "https",
-                auth_credentials=auth
-            )
+    return weaviate.connect_to_weaviate_cloud(
+        cluster_url=url,
+        auth_credentials=auth
+    )
 
 def build_vectorstore(chunks):
     """
@@ -86,7 +65,7 @@ def build_vectorstore(chunks):
         # Batch upload to Weaviate
         with collection.batch.dynamic() as batch:
             for i, chunk in enumerate(chunks):
-                vector = embeddings[i].tolist()  # Convert numpy array to list of floats
+                vector = embeddings[i].tolist() 
                 batch.add_object(
                     properties={
                         "text": chunk["text"],
@@ -95,3 +74,5 @@ def build_vectorstore(chunks):
                     vector=vector
                 )
         print(f"Ingested {len(chunks)} chunks into Weaviate.")
+
+#  updated final version
