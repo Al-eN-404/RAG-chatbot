@@ -9,10 +9,9 @@ st.set_page_config(
     page_title="RAG Web Chatbot",
     page_icon="💬",
     layout="wide",
-    initial_sidebar_state="auto"  # Automatically collapses on mobile, expanded on desktop
-)
+    initial_sidebar_state="auto" )
 
-# Custom CSS for a clean, premium, modern, and responsive aesthetic
+# CSS for a clean, and responsive 
 st.markdown("""
 <style>
     /* Load professional typography */
@@ -141,7 +140,7 @@ st.markdown("""
         border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    /* --- RESPONSIVENESS FIXES --- */
+    /* --- RESPONSIVENESS & TEXTBOX DEPTH ADJUSTMENTS --- */
     @media (max-width: 768px) {
         .header-title {
             font-size: 1.8rem !important;
@@ -162,10 +161,25 @@ st.markdown("""
     [data-testid="stSidebar"] [data-testid="stMetricLabel"] {
         font-size: 0.8rem !important;
     }
+
+    /* Adjust the textbox depth to be a little higher on first run */
+    div[data-testid="stTextInput"] input {
+        height: 3.2rem !important;
+        font-size: 1.05rem !important;
+        padding: 0.5rem 1rem !important;
+    }
+    div[data-testid="stNumberInput"] input {
+        height: 3.2rem !important;
+        font-size: 1.05rem !important;
+    }
+    div[data-testid="stChatInput"] textarea {
+        min-height: 3.8rem !important;
+        font-size: 1.05rem !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# Render Custom Header
+# Render Header
 st.markdown("""
 <div class="header-container">
     <h1 class="header-title">💬 Web RAG Chatbot</h1>
@@ -185,7 +199,7 @@ if "num_chunks" not in st.session_state:
 if "current_url" not in st.session_state:
     st.session_state.current_url = ""
 
-# Sidebar - Configuration and Ingestion
+# Sidebar 
 with st.sidebar:
     st.markdown('<p class="sidebar-title">🌐 Knowledge base</p>', unsafe_allow_html=True)
     
@@ -193,7 +207,7 @@ with st.sidebar:
         st.markdown('<div class="status-badge"><span class="pulse-dot"></span>Index Live</div>', unsafe_allow_html=True)
         st.markdown("### 📊 Index Statistics")
         
-        # Clean dashboard columns inside the sidebar
+        
         col1, col2 = st.columns(2)
         with col1:
             st.metric("Pages Crawled", st.session_state.num_pages)
@@ -254,14 +268,7 @@ if not st.session_state.ready:
     # Onboarding Form in the Center (extremely responsive on mobile)
     col_left, col_center, col_right = st.columns([1, 4, 1])
     with col_center:
-        st.markdown("""
-        <div class="onboarding-card">
-            <div style="font-size: 2.8rem; margin-bottom: 0.8rem;">🌐</div>
-            <h3 style="margin: 0 0 0.5rem 0; font-family: 'Outfit', sans-serif; font-weight: 700; color: #1e3c72; font-size: 1.5rem;">Setup Your Knowledge Base</h3>
-            <p style="margin: 0; color: #64748b; font-size: 0.95rem; line-height: 1.5;">Enter the URL of the website you want to scrape and query. Once processed, you can converse with its content instantly.</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
+       
         url = st.text_input(
             "Website URL",
             placeholder="https://example.com",
@@ -353,5 +360,3 @@ else:
                         "role": "assistant",
                         "content": err_msg
                     })
-
-# Updated final project code v2

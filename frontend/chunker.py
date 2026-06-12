@@ -1,3 +1,4 @@
+
 from scraper import crawl_website
 from langchain_text_splitters import (RecursiveCharacterTextSplitter)
 
@@ -13,3 +14,5 @@ def chunk_pages(pages):
             chunks.append({"url":page["url"], "text":chunk})
     
     return chunks
+
+
