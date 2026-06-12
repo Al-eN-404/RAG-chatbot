@@ -9,7 +9,7 @@ load_dotenv()
 
 def get_api_key():
    
-    keys = ["API-KEY", "GROQ_API_KEY"]
+    keys = ["API_KEY", "GROQ_API_KEY"]
     
     #  Streamlit Secrets 
     try:
