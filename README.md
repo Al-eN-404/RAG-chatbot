@@ -5,7 +5,7 @@ colorFrom: blue
 colorTo: indigo
 sdk: streamlit
 sdk_version: 1.30.0
-app_file: app.py
+app_file: frontend/app.py
 pinned: false
 ---
 
@@ -17,7 +17,7 @@ The system uses **Weaviate Cloud Services (WCD)** for cloud-hosted vector storag
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
 * **Parallel Web Scraper:** Utilizes Python's `asyncio` and `Playwright` to crawl pages concurrently, respecting domain constraints and ignoring junk assets (PDFs, images, etc.).
 * **Smart Content Chunking:** Uses LangChain's `RecursiveCharacterTextSplitter` to partition page text into optimized chunks with configured overlapping.
@@ -27,7 +27,7 @@ The system uses **Weaviate Cloud Services (WCD)** for cloud-hosted vector storag
 
 ---
 
-## 🛠️ Architecture & Solution Approach
+## Architecture & Solution Approach
 
 ```mermaid
 graph TD
@@ -59,7 +59,7 @@ graph TD
 
 ---
 
-## 📋 Prerequisites
+## Prerequisites
 
 * **Python 3.10 to 3.13** installed on your system.
 * A **Weaviate Cloud (WCD)** sandbox/cluster URL and API key.
@@ -67,7 +67,7 @@ graph TD
 
 ---
 
-## ⚙️ Setup & Installation
+## Setup & Installation
 
 Follow these steps to run the project locally:
 
@@ -110,7 +110,7 @@ WEAVIATE_API_KEY=your_weaviate_api_key_here
 
 ---
 
-## 🖥️ Usage
+## Usage
 
 1. Start the Streamlit server:
    ```bash
@@ -119,6 +119,7 @@ WEAVIATE_API_KEY=your_weaviate_api_key_here
 2. Open the URL provided in the console (usually `http://localhost:8501`).
 3. Enter a target website (e.g., `https://docs.streamlit.io`), choose pages to scrape, and click **Process & Index Site**.
 4. Once indexing is complete, ask questions directly in the chat panel!
+
 # RAG-chatbot
 
 
@@ -144,4 +145,3 @@ py -m pip install langchain-text-splitters
 py -m pip install sentence-transformers
 py -m pip install faiss-cpu
 py -m pip install python-dotenv
-
